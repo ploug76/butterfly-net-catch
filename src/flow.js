@@ -24,7 +24,7 @@ function startEndless(){A();endless=true;endlessN=0;LVi=-1;const pool=endlessPoo
 function endlessRamp(){if(!endless)return;const d=Math.min(1,endlessN/14);LV.n=10+Math.round(d*10);LV.spd=.9+d*.7;LV.flap=1+d*.35;LV.dart=.04+d*.18;LV.wary=.2+d*.6;LV.match=.45-d*.12;LV.bees=1+Math.round(d*2)}
 function goPlay(){state='play';SFX.click();banner(endless?'Meadow Marathon — GO!':'Level '+(LVi+1)+' — GO!','#fff','rgba(46,125,50,.94)',1.1);syncButtons()}
 function stars3(){const base=LV.tot*100;return score>=base*2.3?3:score>=base*1.6?2:1}
-function winLevel(){if(state!=='play')return;const tb=Math.round(timeLeft)*10;score+=tb;const st=stars3();const prevBest=SAVE.best[LVi]||0,prevStars=SAVE.stars[LVi]||0,tsBefore=totalStars();
+function winLevel(){if(state!=='play')return;if(NET.mode!=='idle'){NET.mode='idle';NET.active=false;resolveSwing();NET.caught=[];NET.cool=netDef().cool}const tb=Math.round(timeLeft)*10;score+=tb;const st=stars3();const prevBest=SAVE.best[LVi]||0,prevStars=SAVE.stars[LVi]||0,tsBefore=totalStars();
  SAVE.best[LVi]=Math.max(prevBest,score);SAVE.stars[LVi]=Math.max(prevStars,st);SAVE.total=(SAVE.total||0)+score;save();
  result={win:true,stars:st,tb,score,newBest:score>prevBest,unlockedNext:LVi<29&&prevStars===0,netUnlock:NETS.findIndex((n,i)=>i>0&&totalStars()>=n.need&&tsBefore<n.need),t:0};
  if(result.netUnlock<0)result.netUnlock=null;state='result';SFX.clear();sparkle(W/2,H*.4,60,['#ffe060','#ff80c0','#80e0ff','#fff'],200,1.4);LBL=[];syncButtons()}

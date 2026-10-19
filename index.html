@@ -468,7 +468,7 @@ function updNet(dt){NET.stun=Math.max(0,NET.stun-dt);const ox=NET.hx,oy=NET.hy;
  const dd=HYP(bg.x-NET.hx,bg.y-NET.hy),mx=r*1.9;if(dd>mx){bg.x=NET.hx+(bg.x-NET.hx)/dd*mx;bg.y=NET.hy+(bg.y-NET.hy)/dd*mx}
  if(NET.active){NET.trail.push({x:NET.hx,y:NET.hy,t:0});sweepHit(ox,oy,NET.hx,NET.hy)}for(const p of NET.trail)p.t+=dt;NET.trail=NET.trail.filter(p=>p.t<.18)}
 function segDist(px,py,x0,y0,x1,y1){const dx=x1-x0,dy=y1-y0,l2=dx*dx+dy*dy;let t=l2?((px-x0)*dx+(py-y0)*dy)/l2:0;t=CL(t,0,1);return HYP(px-(x0+dx*t),py-(y0+dy*t))}
-function sweepHit(x0,y0,x1,y1){const r=netDef().r;
+function sweepHit(x0,y0,x1,y1){if(state!=='play')return;const r=netDef().r;
  for(const b of BF){if(b.st!=='fly'&&b.st!=='toFlower'&&b.st!=='land'&&b.st!=='leave')continue;if(b.fade<.5||b.x<-10||b.x>W+10)continue;if(segDist(b.x,b.y,x0,y0,x1,y1)<r+b.u*.42)catchBF(b)}
  for(const e of BEES){if(e.st!=='fly')continue;if(segDist(e.x,e.y,x0,y0,x1,y1)<r*.85+6)stung(e)}}
 function catchBF(b){if(b.flower){b.flower.occ=null;b.flower=null}const sp=SP[b.k];const cd=curCard();b.st='caught';b.ct=0;b.ox=RR(-8,8);b.oy=RR(-6,6);NET.caught.push(b);
@@ -534,7 +534,7 @@ function startEndless(){A();endless=true;endlessN=0;LVi=-1;const pool=endlessPoo
 function endlessRamp(){if(!endless)return;const d=Math.min(1,endlessN/14);LV.n=10+Math.round(d*10);LV.spd=.9+d*.7;LV.flap=1+d*.35;LV.dart=.04+d*.18;LV.wary=.2+d*.6;LV.match=.45-d*.12;LV.bees=1+Math.round(d*2)}
 function goPlay(){state='play';SFX.click();banner(endless?'Meadow Marathon — GO!':'Level '+(LVi+1)+' — GO!','#fff','rgba(46,125,50,.94)',1.1);syncButtons()}
 function stars3(){const base=LV.tot*100;return score>=base*2.3?3:score>=base*1.6?2:1}
-function winLevel(){if(state!=='play')return;const tb=Math.round(timeLeft)*10;score+=tb;const st=stars3();const prevBest=SAVE.best[LVi]||0,prevStars=SAVE.stars[LVi]||0,tsBefore=totalStars();
+function winLevel(){if(state!=='play')return;if(NET.mode!=='idle'){NET.mode='idle';NET.active=false;resolveSwing();NET.caught=[];NET.cool=netDef().cool}const tb=Math.round(timeLeft)*10;score+=tb;const st=stars3();const prevBest=SAVE.best[LVi]||0,prevStars=SAVE.stars[LVi]||0,tsBefore=totalStars();
  SAVE.best[LVi]=Math.max(prevBest,score);SAVE.stars[LVi]=Math.max(prevStars,st);SAVE.total=(SAVE.total||0)+score;save();
  result={win:true,stars:st,tb,score,newBest:score>prevBest,unlockedNext:LVi<29&&prevStars===0,netUnlock:NETS.findIndex((n,i)=>i>0&&totalStars()>=n.need&&tsBefore<n.need),t:0};
  if(result.netUnlock<0)result.netUnlock=null;state='result';SFX.clear();sparkle(W/2,H*.4,60,['#ffe060','#ff80c0','#80e0ff','#fff'],200,1.4);LBL=[];syncButtons()}

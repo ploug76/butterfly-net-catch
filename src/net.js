@@ -23,7 +23,7 @@ function updNet(dt){NET.stun=Math.max(0,NET.stun-dt);const ox=NET.hx,oy=NET.hy;
  const dd=HYP(bg.x-NET.hx,bg.y-NET.hy),mx=r*1.9;if(dd>mx){bg.x=NET.hx+(bg.x-NET.hx)/dd*mx;bg.y=NET.hy+(bg.y-NET.hy)/dd*mx}
  if(NET.active){NET.trail.push({x:NET.hx,y:NET.hy,t:0});sweepHit(ox,oy,NET.hx,NET.hy)}for(const p of NET.trail)p.t+=dt;NET.trail=NET.trail.filter(p=>p.t<.18)}
 function segDist(px,py,x0,y0,x1,y1){const dx=x1-x0,dy=y1-y0,l2=dx*dx+dy*dy;let t=l2?((px-x0)*dx+(py-y0)*dy)/l2:0;t=CL(t,0,1);return HYP(px-(x0+dx*t),py-(y0+dy*t))}
-function sweepHit(x0,y0,x1,y1){const r=netDef().r;
+function sweepHit(x0,y0,x1,y1){if(state!=='play')return;const r=netDef().r;
  for(const b of BF){if(b.st!=='fly'&&b.st!=='toFlower'&&b.st!=='land'&&b.st!=='leave')continue;if(b.fade<.5||b.x<-10||b.x>W+10)continue;if(segDist(b.x,b.y,x0,y0,x1,y1)<r+b.u*.42)catchBF(b)}
  for(const e of BEES){if(e.st!=='fly')continue;if(segDist(e.x,e.y,x0,y0,x1,y1)<r*.85+6)stung(e)}}
 function catchBF(b){if(b.flower){b.flower.occ=null;b.flower=null}const sp=SP[b.k];const cd=curCard();b.st='caught';b.ct=0;b.ox=RR(-8,8);b.oy=RR(-6,6);NET.caught.push(b);
